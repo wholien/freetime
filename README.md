@@ -6,7 +6,7 @@ A CLI tool to help you find when you are available by querying your Google Calen
 
 0) [Download and install Go, Git, and make sure your Google account has Google Calendar enabled](https://developers.google.com/google-apps/calendar/quickstart/go#prerequisites)
 
-    * After installing Go, [make sure your `GOPATH` environmental variable is set](https://golang.org/doc/install)
+  * After installing Go, [make sure your `GOPATH` environmental variable is set](https://golang.org/doc/install)
 
 1) Download this repo
 

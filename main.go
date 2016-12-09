@@ -32,14 +32,14 @@ func main() {
 	}
 
 	calendarId := calendarlist.Items[0].Id
-	//println(calendarId)
+
 	loc, err := time.LoadLocation(calendarlist.Items[0].TimeZone)
 	if err != nil {
 		log.Fatalf("Unable to LoadLocation for calendarId's TimeZone: %v", err)
 	}
 	// Do actual querying
 	dates, freetimeMap := QueryAll(qt, srv, calendarId, loc)
-	//fmt.Println(len(freetimeMap))
+
 	if len(dates) == 0 {
 		log.Fatalf("There are no valid time ranges given your constraints :(")
 	}
@@ -48,5 +48,7 @@ func main() {
 		printTimes(dates, freetimeMap)
 	} else if inputLen == 4 {
 		collatePrintTimes(collateTimes(dates, freetimeMap, qt.duration))
+	} else if inputLen == 5 {
+
 	}
 }

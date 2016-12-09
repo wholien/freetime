@@ -58,6 +58,7 @@ var parseWeekdayTests = []struct {
 	e   error
 }{
 	{"Mondays", time.Weekday(1), nil},
+	{"Monday", time.Weekday(1), nil},
 	{"Tuesdays", time.Weekday(2), nil},
 	{"SundaYs", time.Weekday(0), nil},
 	{"lolz", 0, errors.New("Not a valid weekday: Please enter a valid weekday")},
@@ -71,6 +72,30 @@ func TestParseWeekday(t *testing.T) {
 			t.Errorf("ParseWeekday(%s): expected %v || actual %v", i.wd, i.exp, actual)
 		} else if aerr != nil && i.e != nil && aerr.Error() != i.e.Error() {
 			t.Errorf("ParseWeekday(%s): expected err %s || actual err %+v", i.wd, i.e, aerr)
+		}
+	}
+}
+
+var parseOrdinalTests = []struct {
+	ord  string
+	exp int
+	e   error
+}{
+	{"First", 1, nil},
+	{"Second", 2, nil},
+	{"Any", 0, nil},
+	{"Firsts", 0, nil},
+	{"Julien", 0, errors.New("Not a valid ordinal number: Ordinal numbers are words like 'first' and 'second', and only go up to 'fifth'")},
+	{"DSLs", 0, errors.New("Not a valid ordinal number: Ordinal numbers are words like 'first' and 'second', and only go up to 'fifth'")},
+}
+
+func TestParseOrdinal(t *testing.T) {
+	for _, i := range parseOrdinalTests {
+		actual, aerr := ParseOrdinal(i.ord)
+		if actual != i.exp {
+			t.Errorf("ParseWeekday(%s): expected %v || actual %v", i.ord, i.exp, actual)
+		} else if aerr != nil && i.e != nil && aerr.Error() != i.e.Error() {
+			t.Errorf("ParseWeekday(%s): expected err %s || actual err %+v", i.ord, i.e, aerr)
 		}
 	}
 }

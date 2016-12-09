@@ -10,18 +10,14 @@ import (
 
 func QueryAll(qt QueryTimes, srv *calendar.Service, calendarId string, loc *time.Location) ([]Date, map[Date][]calendar.TimePeriod) {
 	resp := make(map[Date][]calendar.TimePeriod)
-	var querydates []Date
+	//var querydates []Date
+	qt.dates = filter(qt, loc)
 	for _, d := range qt.dates {
-		if qt.careAboutWeekday {
-			if time.Date(time.Now().Year(), time.Month(d.month), d.day, qt.timerange.start, 0, 0, 0, loc).Weekday() != qt.weekday {
-				continue;
-			}
-		}
 		tp := QueryOne(qt.timerange, d, qt.duration, srv, calendarId, loc)
-		querydates = append(querydates, d)
+		//querydates = append(querydates, d)
 		resp[d] = tp
 	}
-	return querydates, resp
+	return qt.dates, resp
 }
 
 func QueryOne(timerange TimeRange, date Date, dur float64, srv *calendar.Service, calendarId string, loc *time.Location) []calendar.TimePeriod {
@@ -64,4 +60,36 @@ func QueryOne(timerange TimeRange, date Date, dur float64, srv *calendar.Service
 		fmt.Println(ft.Start, "<--->", ft.End)
 	}
 	return freetimes
+}
+
+func filter(qt QueryTimes, loc *time.Location) []Date {
+	if qt.careAboutWeekday {
+		var newdates []Date
+		for _, d := range qt.dates {
+			if time.Date(time.Now().Year(), time.Month(d.month), d.day, 0, 0, 0, 0, loc).Weekday() == qt.weekday {
+				newdates = append(newdates, d)
+			}
+		}
+		if qt.ordinal != 0 {
+			var ordinalnewdates []Date
+			for _, d := range newdates {
+				thisday := time.Date(time.Now().Year(), time.Month(d.month), d.day, 0, 0, 0, 0, loc)
+				counter := 0
+				countday := time.Date(time.Now().Year(), time.Month(d.month), 1, 0, 0, 0, 0, loc)
+				for !thisday.Before(countday) {
+					if countday.Weekday() == qt.weekday {
+						counter++
+					}
+					countday = countday.AddDate(0, 0, 1)
+				}
+				if counter == qt.ordinal {
+					ordinalnewdates = append(ordinalnewdates, d)
+				}
+			}
+			return ordinalnewdates
+		}
+		return newdates
+	} else {
+		return qt.dates
+	}
 }

@@ -18,6 +18,7 @@ type QueryTimes struct {
 	duration  float64
 	weekday   time.Weekday
 	careAboutWeekday bool
+	ordinal    int
 }
 
 var weekdays = [...]string{
@@ -28,4 +29,13 @@ var weekdays = [...]string{
 	"thursdays",
 	"fridays",
 	"saturdays",
+}
+
+var ordinals = [...]string{
+	"any",
+	"first",
+	"second",
+	"third",
+	"fourth",
+	"fifth",
 }

@@ -71,11 +71,40 @@ func Parse4(input []string) (QueryTimes, error) {
 	for i, d := range dates {
 		fmt.Println("day", i, ":", d.month, d.day)
 	}
-	return QueryTimes{timerange: timerange, dates: dates, duration: dur, weekday: weekday, careAboutWeekday: true}, nil
+	return QueryTimes{timerange: timerange, dates: dates, duration: dur, weekday: weekday, careAboutWeekday: true, ordinal:0}, nil
 }
 
-func Parse5(input []string) {
-	fmt.Println(input, len(input))
+func Parse5(input []string) (QueryTimes, error) {
+	//1hour 1pm-5pm first Monday 11/10-12/15
+	dur, err := ParseDuration(input[0])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("duration:", dur)
+	timerange, err := ParseTimeRange(input[1])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("timerange:", timerange.start, timerange.end)
+	ordinal, err := ParseOrdinal(input[2])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("ordinal:", ordinal)
+	weekday, err := ParseWeekday(input[3])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("weekday:", weekday)
+	dates, err := ParseDates(input[4])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("datelength:", len(dates))
+	for i, d := range dates {
+		fmt.Println("day", i, ":", d.month, d.day)
+	}
+	return QueryTimes{timerange: timerange, dates: dates, duration: dur, weekday: weekday, careAboutWeekday: true, ordinal: ordinal}, nil
 }
 
 func ParseDuration(dur string) (float64, error) {
@@ -152,6 +181,9 @@ func ParseTimeRange(tr string) (TimeRange, error) {
 }
 
 func ParseWeekday(wd string) (time.Weekday, error) {
+	if !strings.HasSuffix(wd, "s") {
+		wd = wd + "s"
+	}
 	if !strings.Contains(wd, "day") {
 		return 0, errors.New("Not a valid weekday: Please enter a valid weekday")
 	} else {
@@ -162,6 +194,15 @@ func ParseWeekday(wd string) (time.Weekday, error) {
 		}
 	}
 	return 0, errors.New("Not a valid weekday: Please enter a valid weekday")
+}
+
+func ParseOrdinal(ord string) (int, error) {
+	for i, d := range ordinals {
+		if strings.ToLower(ord) == d {
+			return i, nil
+		}
+	}
+	return 0, errors.New("Not a valid ordinal number: Ordinal numbers are words like 'first' and 'second', and only go up to 'fifth'")
 }
 
 func ParseDates(dates string) ([]Date, error) {
