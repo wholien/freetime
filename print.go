@@ -5,13 +5,16 @@ import (
 	"log"
 	"time"
 
+	"github.com/fatih/color"
 	"google.golang.org/api/calendar/v3"
 )
 
 func printTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod) {
+	//blue := color.New(color.FgBlue)
+	cyan := color.New(color.FgCyan)
 	for _, d := range dates {
 		tplist := freetimeMap[d]
-		fmt.Printf("\n%s/%s: ", padNum(d.month), padNum(d.day))
+		cyan.Printf("\n%s/%s: ", padNum(d.month), padNum(d.day))
 		for index, tp := range tplist {
 			if index > 0 {
 				fmt.Printf(", ")
@@ -73,7 +76,7 @@ func collateTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod, dur 
 
 			j_start := time.Date(i_start.Year(), i_start.Month(), i_start.Day(), j_oldstart.Hour(), j_oldstart.Minute(), 0, 0, j_oldstart.Location())
 			j_end := time.Date(i_start.Year(), i_start.Month(), i_start.Day(), j_oldend.Hour(), j_oldend.Minute(), 0, 0, j_oldend.Location())
-			
+
 			if i_start.After(j_end) {
 				j++
 			} else if j_start.After(i_end) {
