@@ -8,13 +8,20 @@ import (
 	"google.golang.org/api/calendar/v3"
 )
 
-func QueryAll(qt QueryTimes, srv *calendar.Service, calendarId string, loc *time.Location) map[Date][]calendar.TimePeriod {
+func QueryAll(qt QueryTimes, srv *calendar.Service, calendarId string, loc *time.Location) ([]Date, map[Date][]calendar.TimePeriod) {
 	resp := make(map[Date][]calendar.TimePeriod)
+	var querydates []Date
 	for _, d := range qt.dates {
+		if qt.careAboutWeekday {
+			if time.Date(time.Now().Year(), time.Month(d.month), d.day, qt.timerange.start, 0, 0, 0, loc).Weekday() != qt.weekday {
+				continue;
+			}
+		}
 		tp := QueryOne(qt.timerange, d, qt.duration, srv, calendarId, loc)
+		querydates = append(querydates, d)
 		resp[d] = tp
 	}
-	return resp
+	return querydates, resp
 }
 
 func QueryOne(timerange TimeRange, date Date, dur float64, srv *calendar.Service, calendarId string, loc *time.Location) []calendar.TimePeriod {

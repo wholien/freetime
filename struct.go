@@ -17,14 +17,15 @@ type QueryTimes struct {
 	dates     []Date
 	duration  float64
 	weekday   time.Weekday
+	careAboutWeekday bool
 }
 
 var weekdays = [...]string{
-	"sunday",
-	"monday",
-	"tuesday",
-	"wednesday",
-	"thursday",
-	"friday",
-	"saturday",
+	"sundays",
+	"mondays",
+	"tuesdays",
+	"wednesdays",
+	"thursdays",
+	"fridays",
+	"saturdays",
 }

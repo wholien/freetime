@@ -17,7 +17,7 @@ func Parse(input []string) (QueryTimes, error) {
 	case len == 3:
 		return Parse3(input)
 	case len == 4:
-		Parse4(input)
+		return Parse4(input)
 	case len == 5:
 		Parse5(input)
 	}
@@ -71,7 +71,7 @@ func Parse4(input []string) (QueryTimes, error) {
 	for i, d := range dates {
 		fmt.Println("day", i, ":", d.month, d.day)
 	}
-	return QueryTimes{timerange: timerange, dates: dates, duration: dur}, nil
+	return QueryTimes{timerange: timerange, dates: dates, duration: dur, weekday: weekday, careAboutWeekday: true}, nil
 }
 
 func Parse5(input []string) {

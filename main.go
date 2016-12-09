@@ -18,6 +18,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, "reading input: ", err)
 	}
 	input := strings.Fields(scanner.Text())
+	inputLen := len(input)
+
 	qt, err := Parse(input)
 	if err != nil {
 		log.Fatalf("Unable to parse user input: %v", err)
@@ -36,9 +38,15 @@ func main() {
 		log.Fatalf("Unable to LoadLocation for calendarId's TimeZone: %v", err)
 	}
 	// Do actual querying
-	freetimeMap := QueryAll(qt, srv, calendarId, loc)
+	dates, freetimeMap := QueryAll(qt, srv, calendarId, loc)
 	//fmt.Println(len(freetimeMap))
-
-	// Output and or print results
-	printTimes(qt, freetimeMap)
+	if len(dates) == 0 {
+		log.Fatalf("There are no valid time ranges given your constraints :(")
+	}
+	fmt.Println("HELLO")
+	if inputLen == 3 {
+		printTimes(dates, freetimeMap)
+	} else if inputLen == 4 {
+		collatePrintTimes(collateTimes(dates, freetimeMap, qt.duration))
+	}
 }

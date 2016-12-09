@@ -57,9 +57,9 @@ var parseWeekdayTests = []struct {
 	exp time.Weekday
 	e   error
 }{
-	{"Monday", time.Weekday(1), nil},
-	{"Tuesday", time.Weekday(2), nil},
-	{"SundaY", time.Weekday(0), nil},
+	{"Mondays", time.Weekday(1), nil},
+	{"Tuesdays", time.Weekday(2), nil},
+	{"SundaYs", time.Weekday(0), nil},
 	{"lolz", 0, errors.New("Not a valid weekday: Please enter a valid weekday")},
 	{"day", 0, errors.New("Not a valid weekday: Please enter a valid weekday")},
 }
