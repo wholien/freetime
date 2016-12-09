@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	//"time"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -91,24 +90,24 @@ func saveToken(file string, token *oauth2.Token) {
 }
 
 func setup() *calendar.Service {
-  ctx := context.Background()
+	ctx := context.Background()
 
-  b, err := ioutil.ReadFile("client_secret.json")
-  if err != nil {
-    log.Fatalf("Unable to read client secret file: %v", err)
-  }
+	b, err := ioutil.ReadFile("client_secret.json")
+	if err != nil {
+		log.Fatalf("Unable to read client secret file: %v", err)
+	}
 
-  // If modifying these scopes, delete your previously saved credentials
-  // at ~/.credentials/calendar-go-quickstart.json
-  config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
-  if err != nil {
-    log.Fatalf("Unable to parse client secret file to config: %v", err)
-  }
-  client := getClient(ctx, config)
+	// If modifying these scopes, delete your previously saved credentials
+	// at ~/.credentials/calendar-go-quickstart.json
+	config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
+	if err != nil {
+		log.Fatalf("Unable to parse client secret file to config: %v", err)
+	}
+	client := getClient(ctx, config)
 
-  srv, err := calendar.New(client)
-  if err != nil {
-    log.Fatalf("Unable to retrieve calendar Client %v", err)
-  }
-  return srv
+	srv, err := calendar.New(client)
+	if err != nil {
+		log.Fatalf("Unable to retrieve calendar Client %v", err)
+	}
+	return srv
 }

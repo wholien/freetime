@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-    "log"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -11,28 +11,30 @@ import (
 
 func main() {
 	//prompt and parse user input
-	fmt.Printf("Freetime: ")
+	fmt.Printf("Freetime> ")
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, "reading input: ", err)
 	}
 	input := strings.Fields(scanner.Text())
-	qt := Parse(input)
-    srv := setup()
+	qt, err := Parse(input)
+	if err != nil {
+		log.Fatalf("Unable to parse user input: %v", err)
+	}
+	srv := setup()
 
 	calendarlist, err := srv.CalendarList.List().Do()
-    if err != nil {
-       log.Fatalf("Unable to retrieve list of calendars: %v", err)
-    }
-	// println(len(calendarlist.Items))
-	// for _, id := range calendarlist.Items {
-	// 	fmt.Println(id.Id, "loc: ", id.TimeZone)
-	// }
+	if err != nil {
+		log.Fatalf("Unable to retrieve list of calendars: %v", err)
+	}
+
 	calendarId := calendarlist.Items[0].Id
 	//println(calendarId)
-	loc, _ := time.LoadLocation(calendarlist.Items[0].TimeZone)
-
+	loc, err := time.LoadLocation(calendarlist.Items[0].TimeZone)
+	if err != nil {
+		log.Fatalf("Unable to LoadLocation for calendarId's TimeZone: %v", err)
+	}
 	// Do actual querying
 	freetimeMap := QueryAll(qt, srv, calendarId, loc)
 	//fmt.Println(len(freetimeMap))

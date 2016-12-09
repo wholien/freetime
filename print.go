@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"google.golang.org/api/calendar/v3"
@@ -30,13 +29,4 @@ func printTimes(qt QueryTimes, freetimeMap map[Date][]calendar.TimePeriod) {
 		}
 	}
 	fmt.Printf("\n\n")
-}
-
-func padNum(num int) string {
-	if num < 10 {
-		n := strconv.Itoa(num)
-		n = "0" + n
-		return n
-	}
-	return strconv.Itoa(num)
 }

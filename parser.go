@@ -3,18 +3,17 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
-	//"time"
+	"time"
 )
 
-func Parse(input []string) QueryTimes {
+func Parse(input []string) (QueryTimes, error) {
 	//fmt.Println("Parse() ", input, len(input))
 	len := len(input)
 	switch {
 	case len < 3 || len >= 6:
-		log.Fatal(errors.New("Incorrect number of args - there needs to be 3 to 5 arguments!"))
+		return QueryTimes{}, errors.New("Parse: Incorrect number of args - there needs to be 3 to 5 arguments!")
 	case len == 3:
 		return Parse3(input)
 	case len == 4:
@@ -22,71 +21,114 @@ func Parse(input []string) QueryTimes {
 	case len == 5:
 		Parse5(input)
 	}
-	return QueryTimes{}
+	return QueryTimes{}, nil
 }
 
-func Parse3(input []string) QueryTimes {
-	//fmt.Println("input:", input, len(input))
-	dur := ParseDuration(input[0])
+func Parse3(input []string) (QueryTimes, error) {
+	dur, err := ParseDuration(input[0])
+	if err != nil {
+		return QueryTimes{}, err
+	}
 	fmt.Println("duration:", dur)
-	timerange := ParseTimeRange(input[1])
+	timerange, err := ParseTimeRange(input[1])
+	if err != nil {
+		return QueryTimes{}, err
+	}
 	fmt.Println("timerange:", timerange.start, timerange.end)
-	dates := ParseDates(input[2])
+	dates, err := ParseDates(input[2])
+	if err != nil {
+		return QueryTimes{}, err
+	}
 	fmt.Println("datelength:", len(dates))
 	for i, d := range dates {
 		fmt.Println("day", i, ":", d.month, d.day)
 	}
-	return QueryTimes{timerange: timerange, dates: dates, duration: dur}
+	return QueryTimes{timerange: timerange, dates: dates, duration: dur}, nil
 }
 
-func Parse4(input []string) {
-	fmt.Println(input, len(input))
+func Parse4(input []string) (QueryTimes, error) {
+	//1hour 1pm-5pm Mondays 11/10-12/15
+	dur, err := ParseDuration(input[0])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("duration:", dur)
+	timerange, err := ParseTimeRange(input[1])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("timerange:", timerange.start, timerange.end)
+	weekday, err := ParseWeekday(input[2])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("weekday:", weekday)
+	dates, err := ParseDates(input[3])
+	if err != nil {
+		return QueryTimes{}, err
+	}
+	fmt.Println("datelength:", len(dates))
+	for i, d := range dates {
+		fmt.Println("day", i, ":", d.month, d.day)
+	}
+	return QueryTimes{timerange: timerange, dates: dates, duration: dur}, nil
 }
 
 func Parse5(input []string) {
 	fmt.Println(input, len(input))
 }
 
-func ParseDuration(dur string) int {
-	//"1hour" || "30minutes"
+func ParseDuration(dur string) (float64, error) {
+	//"1hour" || "30minutes" || 1h12m
 	if !checkDuration(dur) {
-		log.Fatal(errors.New("Duration is not in the correct format:\n" +
-			"-- Should be in format '1hour' or '30minutes'!"))
+		return 0, errors.New("Duration is not in the correct format:\n" +
+			"-- Should be in format '1hour' or '30minutes'!")
 	}
-	if strings.Contains(dur, "hour") {
+	if containsHour(dur) && containsMin(dur) {
+		s := strings.SplitAfter(dur, "h")
+		if len(s) != 2 || !isNum(s[0], 23) || !isNum(s[1], 59) || !strings.HasSuffix(s[0], "h") || !strings.HasSuffix(s[1], "m") {
+			return 0, errors.New("Duration is not in the correct format:\n" +
+				"-- If you want to enter both hours and minutes, it should be in the format '2h30m'")
+		}
+		h, err := strconv.Atoi(strings.TrimFunc(s[0], trimToNum))
+		if err != nil {
+			return 0, err
+		}
+		m, err := strconv.Atoi(strings.TrimFunc(s[1], trimToNum))
+		if err != nil {
+			return 0, err
+		}
+		return float64(h) + float64(m)/60, nil
+	} else if containsHour(dur) {
 		h, err := strconv.Atoi(strings.TrimFunc(dur, trimToNum))
 		if err != nil {
-			log.Fatal(err)
+			return 0, err
 		}
-		return h
-	} else if strings.Contains(dur, "min") {
+		return float64(h), nil
+	} else if containsMin(dur) {
 		m, err := strconv.Atoi(strings.TrimFunc(dur, trimToNum))
 		if err != nil {
-			log.Fatal(err)
+			return 0, err
 		}
-		return m / 60
+		return float64(m) / 60, nil
 	}
-	return 0
+	return 0, nil
 }
 
-func ParseTimeRange(tr string) TimeRange {
+func ParseTimeRange(tr string) (TimeRange, error) {
 	//"1pm-5pm"
 	if !checkTimeRange(tr) {
-		log.Fatal(errors.New("Time range is not in the correct format:\n" +
-			"-- Should be in format '1pm-5pm"))
+		return TimeRange{}, errors.New("Time range is not in the correct format:\n-- Should be in format '1pm-5pm")
 	}
 
 	timerange := strings.Split(tr, "-")
-	if !isNum(timerange[0]) || !isNum(timerange[1]) {
-		log.Fatal(errors.New("Hours need to be 1-12!"))
-	}
 	starttime, err := strconv.Atoi(strings.TrimFunc(timerange[0], trimToNum))
 	if err != nil {
-		log.Fatal(err)
+		return TimeRange{}, err
 	}
 	endtime, err := strconv.Atoi(strings.TrimFunc(timerange[1], trimToNum))
 	if err != nil {
-		log.Fatal(err)
+		return TimeRange{}, err
 	}
 
 	startmeridian, endmeridian := "", ""
@@ -103,13 +145,26 @@ func ParseTimeRange(tr string) TimeRange {
 	starttime = meridianTo24(starttime, startmeridian)
 	endtime = meridianTo24(endtime, endmeridian)
 	if starttime >= endtime {
-		log.Fatal(errors.New("Starting time should be before the ending time"))
+		return TimeRange{}, errors.New("Starting time should be before the ending time")
 	}
 
-	return TimeRange{start: starttime, end: endtime}
+	return TimeRange{start: starttime, end: endtime}, nil
 }
 
-func ParseDates(dates string) []Date {
+func ParseWeekday(wd string) (time.Weekday, error) {
+	if !strings.Contains(wd, "day") {
+		return 0, errors.New("Not a valid weekday: Please enter a valid weekday")
+	} else {
+		for i, d := range weekdays {
+			if strings.ToLower(wd) == d {
+				return time.Weekday(i), nil
+			}
+		}
+	}
+	return 0, errors.New("Not a valid weekday: Please enter a valid weekday")
+}
+
+func ParseDates(dates string) ([]Date, error) {
 	//11/10 || 11/10,11/12,11/15 || 11/10-11/15
 	if strings.Contains(dates, ",") {
 		return ParseDatesComma(dates)
@@ -120,23 +175,32 @@ func ParseDates(dates string) []Date {
 	}
 }
 
-func ParseDatesComma(dates string) []Date {
+func ParseDatesComma(dates string) ([]Date, error) {
 	days := strings.Split(dates, ",")
 	var datelist []Date
 	for _, d := range days {
-		datelist = append(datelist, ParseSingleDate(d))
+		currd, err := ParseSingleDate(d)
+		if err != nil {
+			return nil, err
+		}
+		datelist = append(datelist, currd)
 	}
-	return datelist
+	return datelist, nil
 }
 
-func ParseDatesDash(dates string) []Date {
-	fmt.Println("parse dates dash")
+func ParseDatesDash(dates string) ([]Date, error) {
 	daterange := strings.Split(dates, "-")
 	if len(daterange) != 2 {
-		log.Fatal(errors.New("Incorrect format for dates"))
+		return nil, errors.New("When using a date range, it should be in the format '10/11-10/15'")
 	}
-	startdate := ParseSingleDate(daterange[0])
-	enddate := ParseSingleDate(daterange[1])
+	startdate, err := ParseSingleDate(daterange[0])
+	if err != nil {
+		return nil, err
+	}
+	enddate, err := ParseSingleDate(daterange[1])
+	if err != nil {
+		return nil, err
+	}
 	var datelist []Date
 
 	datelist = append(datelist, startdate)
@@ -154,41 +218,44 @@ func ParseDatesDash(dates string) []Date {
 		}
 		datelist = append(datelist, curr)
 	}
-	return datelist
+	return datelist, nil
 }
 
-func ParseDate(date string) []Date {
-	dates := []Date{ParseSingleDate(date)}
-	return dates
+func ParseDate(date string) ([]Date, error) {
+	d, err := ParseSingleDate(date)
+	if err != nil {
+		return []Date{}, err
+	}
+	dates := []Date{d}
+	return dates, nil
 }
 
-func ParseSingleDate(date string) Date {
+func ParseSingleDate(date string) (Date, error) {
 	md := strings.Split(date, "/")
 	if len(md) != 2 {
-		log.Fatal(errors.New("Incorrect format for date!"))
+		return Date{}, errors.New("Incorrect format for date: '/' should separate the month and day")
 	}
 	m, err := strconv.Atoi(md[0])
 	if err != nil {
-		log.Fatal(err)
+		return Date{}, err
 	}
 	d, err := strconv.Atoi(md[1])
 	if err != nil {
-		log.Fatal(err)
+		return Date{}, err
 	}
 	if !checkDate(m, d) {
-		log.Fatal(errors.New("Incorrect format for date!!"))
+		return Date{}, errors.New("Incorrect format for date: month and/or day out of range")
 	}
-	return Date{month: m, day: d}
+	return Date{month: m, day: d}, nil
 }
 
 func checkDuration(dur string) bool {
-	//"1hour" || "2hours" || "30minutes" || "5mins" || ...
-	return strings.HasSuffix(dur, "hour") ||
-		strings.HasSuffix(dur, "hours") ||
-		strings.HasSuffix(dur, "minutes") ||
-		strings.HasSuffix(dur, "minute") ||
-		strings.HasSuffix(dur, "mins") ||
-		strings.HasSuffix(dur, "min")
+	//"1hour" || "2hours" || "30minutes" || "5mins" || "1h30m" || ...
+	return strings.HasSuffix(dur, "hour") || strings.HasSuffix(dur, "hours") ||
+		strings.HasSuffix(dur, "minutes") || strings.HasSuffix(dur, "minute") ||
+		strings.HasSuffix(dur, "mins") || strings.HasSuffix(dur, "min") ||
+		strings.HasSuffix(dur, "m") || strings.HasSuffix(dur, "h") ||
+		strings.HasSuffix(dur, "hrs") || strings.HasSuffix(dur, "hr")
 }
 
 func checkTimeRange(tr string) bool {
@@ -203,7 +270,6 @@ func checkTimeRange(tr string) bool {
 	if !checkTime(timerange[0]) || !checkTime(timerange[1]) {
 		return false
 	}
-
 	return true
 }
 
@@ -213,5 +279,5 @@ func checkDate(month, day int) bool {
 
 func checkTime(t string) bool {
 	//"1pm" || "11am"
-	return isNum(t) && (strings.HasSuffix(t, "am") || strings.HasSuffix(t, "pm"))
+	return isNum(t, 12) && (strings.HasSuffix(t, "am") || strings.HasSuffix(t, "pm"))
 }

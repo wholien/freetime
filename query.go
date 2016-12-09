@@ -17,7 +17,7 @@ func QueryAll(qt QueryTimes, srv *calendar.Service, calendarId string, loc *time
 	return resp
 }
 
-func QueryOne(timerange TimeRange, date Date, dur int, srv *calendar.Service, calendarId string, loc *time.Location) []calendar.TimePeriod {
+func QueryOne(timerange TimeRange, date Date, dur float64, srv *calendar.Service, calendarId string, loc *time.Location) []calendar.TimePeriod {
 	fbri := &calendar.FreeBusyRequestItem{Id: calendarId}
 	fbriarr := []*calendar.FreeBusyRequestItem{fbri}
 	year := time.Now().Year()
@@ -38,7 +38,7 @@ func QueryOne(timerange TimeRange, date Date, dur int, srv *calendar.Service, ca
 				if err != nil {
 					log.Fatal(err)
 				}
-				if freest.Sub(st).Hours() <= float64(-(dur)) {
+				if freest.Sub(st).Hours() <= (-dur) {
 					freetimes = append(freetimes, calendar.TimePeriod{Start: freest.In(loc).String(), End: st.In(loc).String()})
 				}
 				en, err := time.Parse(time.RFC3339, tp.End)
@@ -47,7 +47,7 @@ func QueryOne(timerange TimeRange, date Date, dur int, srv *calendar.Service, ca
 				}
 				freest = en
 			}
-			if freest.Sub(tend).Hours() <= float64(-(dur)) {
+			if freest.Sub(tend).Hours() <= (-dur) {
 				freetimes = append(freetimes, calendar.TimePeriod{Start: freest.In(loc).String(), End: tend.In(loc).String()})
 			}
 		}
