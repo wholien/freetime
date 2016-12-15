@@ -10,7 +10,6 @@ import (
 )
 
 func printTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod) {
-	//blue := color.New(color.FgBlue)
 	cyan := color.New(color.FgCyan)
 	for _, d := range dates {
 		tplist := freetimeMap[d]
@@ -35,7 +34,8 @@ func printTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod) {
 }
 
 func collatePrintTimes(timeperiods []calendar.TimePeriod) {
-	fmt.Println("len(tp): ", len(timeperiods))
+	//fmt.Println("len(tp): ", len(timeperiods))
+	fmt.Printf("\n")
 	for _, tp := range timeperiods {
 		timestart, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", tp.Start)
 		if err != nil {
@@ -59,8 +59,8 @@ func collateTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod, dur 
 	for _, d := range dates[1:] {
 		tplistcurr := freetimeMap[d]
 
-		fmt.Println(tplist)
-		fmt.Println(tplistcurr)
+		//fmt.Println(tplist)
+		//fmt.Println(tplistcurr)
 
 		var result []calendar.TimePeriod
 		i, j := 0, 0
@@ -68,10 +68,10 @@ func collateTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod, dur 
 			curr := calendar.TimePeriod{}
 			i_start, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", tplist[i].Start)
 
-			fmt.Println("i_start:", i_start)
+			//fmt.Println("i_start:", i_start)
 			i_end, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", tplist[i].End)
 			j_oldstart, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", tplistcurr[j].Start)
-			fmt.Println("j_start:", j_oldstart)
+			//fmt.Println("j_start:", j_oldstart)
 			j_oldend, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", tplistcurr[j].End)
 
 			j_start := time.Date(i_start.Year(), i_start.Month(), i_start.Day(), j_oldstart.Hour(), j_oldstart.Minute(), 0, 0, j_oldstart.Location())
@@ -83,10 +83,10 @@ func collateTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod, dur 
 				i++
 			} else {
 				if i_start.After(j_start) {
-					fmt.Println("hey")
+					//fmt.Println("hey")
 					curr.Start = tplist[i].Start
 				} else {
-					fmt.Println("hey2")
+					//fmt.Println("hey2")
 					curr.Start = tplistcurr[j].Start
 				}
 				if i_end.After(j_end) {
@@ -101,11 +101,11 @@ func collateTimes(dates []Date, freetimeMap map[Date][]calendar.TimePeriod, dur 
 				newen := time.Date(st.Year(), st.Month(), st.Day(), en.Hour(), en.Minute(), 0, 0, en.Location())
 				curr.Start = st.String()
 				curr.End = newen.String()
-				fmt.Println("curr:", curr)
-				fmt.Println("hours:",st.Sub(newen).Hours())
-				fmt.Println("duration:",dur)
+				//fmt.Println("curr:", curr)
+				//fmt.Println("hours:",st.Sub(newen).Hours())
+				//fmt.Println("duration:",dur)
 				if st.Sub(newen).Hours() <= (-dur) {
-					fmt.Println("append")
+					//fmt.Println("append")
 					result = append(result, curr)
 				}
 			}

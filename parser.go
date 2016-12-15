@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	//"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -29,20 +29,20 @@ func Parse3(input []string) (QueryTimes, error) {
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("duration:", dur)
+	//fmt.Println("duration:", dur)
 	timerange, err := ParseTimeRange(input[1])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("timerange:", timerange.start, timerange.end)
+	//fmt.Println("timerange:", timerange.start, timerange.end)
 	dates, err := ParseDates(input[2])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("datelength:", len(dates))
-	for i, d := range dates {
-		fmt.Println("day", i, ":", d.month, d.day)
-	}
+	//fmt.Println("datelength:", len(dates))
+	// for i, d := range dates {
+	// 	fmt.Println("day", i, ":", d.month, d.day)
+	// }
 	return QueryTimes{timerange: timerange, dates: dates, duration: dur}, nil
 }
 
@@ -52,25 +52,25 @@ func Parse4(input []string) (QueryTimes, error) {
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("duration:", dur)
+	//fmt.Println("duration:", dur)
 	timerange, err := ParseTimeRange(input[1])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("timerange:", timerange.start, timerange.end)
+	//fmt.Println("timerange:", timerange.start, timerange.end)
 	weekday, err := ParseWeekday(input[2])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("weekday:", weekday)
+	//fmt.Println("weekday:", weekday)
 	dates, err := ParseDates(input[3])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("datelength:", len(dates))
-	for i, d := range dates {
-		fmt.Println("day", i, ":", d.month, d.day)
-	}
+	// fmt.Println("datelength:", len(dates))
+	// for i, d := range dates {
+	// 	fmt.Println("day", i, ":", d.month, d.day)
+	// }
 	return QueryTimes{timerange: timerange, dates: dates, duration: dur, weekday: weekday, careAboutWeekday: true, ordinal:0}, nil
 }
 
@@ -80,30 +80,30 @@ func Parse5(input []string) (QueryTimes, error) {
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("duration:", dur)
+	//fmt.Println("duration:", dur)
 	timerange, err := ParseTimeRange(input[1])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("timerange:", timerange.start, timerange.end)
+	//fmt.Println("timerange:", timerange.start, timerange.end)
 	ordinal, err := ParseOrdinal(input[2])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("ordinal:", ordinal)
+	//fmt.Println("ordinal:", ordinal)
 	weekday, err := ParseWeekday(input[3])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("weekday:", weekday)
+	//fmt.Println("weekday:", weekday)
 	dates, err := ParseDates(input[4])
 	if err != nil {
 		return QueryTimes{}, err
 	}
-	fmt.Println("datelength:", len(dates))
-	for i, d := range dates {
-		fmt.Println("day", i, ":", d.month, d.day)
-	}
+	// fmt.Println("datelength:", len(dates))
+	// for i, d := range dates {
+	// 	fmt.Println("day", i, ":", d.month, d.day)
+	// }
 	return QueryTimes{timerange: timerange, dates: dates, duration: dur, weekday: weekday, careAboutWeekday: true, ordinal: ordinal}, nil
 }
 

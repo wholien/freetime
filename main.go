@@ -43,7 +43,7 @@ func main() {
 	if len(dates) == 0 {
 		log.Fatalf("There are no valid time ranges given your constraints :(")
 	}
-	fmt.Println("HELLO")
+	//fmt.Println("HELLO")
 	if inputLen == 3 {
 		printTimes(dates, freetimeMap)
 	} else if inputLen == 4 {

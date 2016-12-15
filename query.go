@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"time"
 
@@ -55,10 +55,10 @@ func QueryOne(timerange TimeRange, date Date, dur float64, srv *calendar.Service
 			}
 		}
 	}
-	fmt.Println("freetimes size: ", len(freetimes))
-	for _, ft := range freetimes {
-		fmt.Println(ft.Start, "<--->", ft.End)
-	}
+	//fmt.Println("freetimes size: ", len(freetimes))
+	// for _, ft := range freetimes {
+	// 	fmt.Println(ft.Start, "<--->", ft.End)
+	// }
 	return freetimes
 }
 
