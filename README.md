@@ -17,7 +17,10 @@ A CLI tool to help you find when you are available by querying your Google Calen
 3) Run the program and enter your queries
 
     //from inside the `freetime` directory
-    go run *.go
+    go build
+
+    // an executable called "freetime" should now be in the folder
+    ./freetime
 
 ##Usage Examples
 
